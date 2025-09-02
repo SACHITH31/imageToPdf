@@ -81,3 +81,45 @@ button:hover {
     align-items: center;
 
 }
+
+
+
+
+
+
+.previews {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.preview-image {
+  width: 120px;       /* Fixed width */
+  height: auto;       /* Maintain aspect ratio */
+  object-fit: cover;  /* Crop if necessary */
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  transition: transform 0.2s;
+}
+
+.preview-image:hover {
+  transform: scale(1.1);  /* Slight zoom on hover */
+}
+
+@media (max-width: 500px) {
+  .preview-image {
+    width: 80px;
+  }
+}
+.allSelectedImagesContainer img {
+    cursor: pointer;
+}
+.imageToPdfConvertHeading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+        
+}
