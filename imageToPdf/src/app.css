@@ -142,3 +142,26 @@ button:hover {
   box-shadow: 0 4px 15px rgba(0,0,0,0.3);
 }
 
+.previews {
+  display: flex;
+  flex-wrap: wrap;         /* allow images to go to next row */
+  justify-content: center; /* center images horizontally */
+  gap: 10px;               /* spacing between images */
+  margin-bottom: 20px;
+  width: 100%;             /* make container fit screen width */
+  box-sizing: border-box;  /* include padding in width calculation */
+}
+
+.preview-image {
+  width: 120px;       /* fixed width */
+  height: 120px;      /* fixed height */
+  object-fit: cover;  /* crop nicely */
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  transition: transform 0.2s;
+}
+
+.preview-image:hover {
+  transform: scale(1.05);
+}
