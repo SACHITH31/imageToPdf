@@ -1,13 +1,39 @@
 import { useState } from "react";
 import { jsPDF } from "jspdf";
-import "./app.css";
+import "./App.css";
 
 export default function App() {
   const [images, setImages] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [draggedIndex, setDraggedIndex] = useState(null);
 
   // Handle file selection
   const handleFileChange = (e) => {
     setImages(Array.from(e.target.files));
+  };
+
+  // Handle drag start
+  const handleDragStart = (index) => {
+    setDraggedIndex(index);
+  };
+
+  // Handle drag over for reordering
+  const handleDragOver = (index, e) => {
+    e.preventDefault();
+    if (index === draggedIndex) return;
+
+    const reordered = [...images];
+    const draggedItem = reordered[draggedIndex];
+    reordered.splice(draggedIndex, 1);
+    reordered.splice(index, 0, draggedItem);
+
+    setDraggedIndex(index);
+    setImages(reordered);
+  };
+
+  // Handle drag end → remove dragging class
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
   };
 
   // Convert to PDF
@@ -17,34 +43,52 @@ export default function App() {
       return;
     }
 
+    setLoading(true);
+
     const pdf = new jsPDF();
 
     for (let i = 0; i < images.length; i++) {
       const img = images[i];
 
-      // Wait for FileReader to finish
       const imgData = await new Promise((resolve) => {
         const reader = new FileReader();
         reader.onload = (e) => resolve(e.target.result);
         reader.readAsDataURL(img);
       });
 
-      // Add image to PDF
-      pdf.addImage(imgData, "JPEG", 10, 10, 190, 0);
+      await new Promise((resolve) => {
+        const imgObj = new Image();
+        imgObj.src = imgData;
+        imgObj.onload = () => {
+          const pageWidth = pdf.internal.pageSize.getWidth() - 20;
+          const pageHeight = pdf.internal.pageSize.getHeight() - 20;
 
-      // Add new page if not last image
-      if (i < images.length - 1) {
-        pdf.addPage();
-      }
+          let imgWidth = imgObj.width;
+          let imgHeight = imgObj.height;
+
+          const ratio = Math.min(pageWidth / imgWidth, pageHeight / imgHeight);
+          imgWidth *= ratio;
+          imgHeight *= ratio;
+
+          const x = (pdf.internal.pageSize.getWidth() - imgWidth) / 2;
+          const y = (pdf.internal.pageSize.getHeight() - imgHeight) / 2;
+
+          pdf.addImage(imgData, "JPEG", x, y, imgWidth, imgHeight);
+
+          if (i < images.length - 1) pdf.addPage();
+          resolve();
+        };
+      });
     }
 
     pdf.save("images.pdf");
+    setLoading(false);
   };
 
   return (
     <div className="main">
       <div className="p-6 text-center">
-        <h1 className="text-2xl font-bold mb-4 imageToPdfConvertHeading">Image to PDF Converter</h1>
+        <h1 className="imageToPdfConvertHeading">Image to PDF Converter</h1>
 
         {/* File Input */}
         <input
@@ -52,18 +96,21 @@ export default function App() {
           accept="image/*"
           multiple
           onChange={handleFileChange}
-          className="mb-4"
         />
 
         {/* Image Previews */}
         {images.length > 0 && (
-          <div className="previews mb-4 allSelectedImagesContainer">
+          <div className="previews allSelectedImagesContainer">
             {images.map((img, idx) => (
               <img
                 key={idx}
                 src={URL.createObjectURL(img)}
                 alt={`preview-${idx}`}
-                className="preview-image"
+                className={`preview-image ${draggedIndex === idx ? "dragging" : ""}`}
+                draggable
+                onDragStart={() => handleDragStart(idx)}
+                onDragOver={(e) => handleDragOver(idx, e)}
+                onDragEnd={handleDragEnd}  // ← FIX: remove dragging class after drop
               />
             ))}
           </div>
@@ -71,11 +118,8 @@ export default function App() {
 
         {/* Convert Button */}
         <div className="convertToPdfButton">
-          <button
-            onClick={handleConvert}
-            className="bg-blue-500 text-white px-4 py-2 rounded"
-          >
-            Convert to PDF
+          <button onClick={handleConvert} disabled={loading}>
+            {loading ? "Generating PDF..." : "Convert to PDF"}
           </button>
         </div>
       </div>

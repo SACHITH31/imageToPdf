@@ -121,5 +121,24 @@ button:hover {
     display: flex;
     justify-content: center;
     align-items: center;
-        
+
 }
+/* Dragging indicator */
+.preview-image.dragging {
+  opacity: 0.5;
+  border: 2px dashed #6a11cb;
+}
+
+/* Loading state button */
+.convertToPdfButton button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+/* Highlight image being dragged */
+.preview-image.dragging {
+  opacity: 0.5;
+  border: 2px dashed #2575fc;
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
