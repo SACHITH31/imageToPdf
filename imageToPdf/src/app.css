@@ -1,0 +1,83 @@
+/* App.css */
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  /* background: linear-gradient(135deg, #6a11cb, #2575fc); */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.container {
+  background-color: #fff;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  text-align: center;
+  max-width: 600px;
+  width: 90%;
+  transition: transform 0.3s ease;
+}
+
+.container:hover {
+  transform: scale(1.03);
+}
+
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+input[type="file"] {
+  display: block;
+  margin: 20px auto;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+img.preview {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  margin: 10px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.images-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+button {
+  margin-top: 20px;
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  color: #fff;
+  border: none;
+  padding: 15px 30px;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+.main, .convertToPdfButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
