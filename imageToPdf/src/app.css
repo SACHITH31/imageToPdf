@@ -1,167 +1,369 @@
-/* App.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
 body {
-  margin: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  /* background: linear-gradient(135deg, #6a11cb, #2575fc); */
+  font-family: 'Poppins', sans-serif;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  padding: 20px;
+
+  background: #1A2A40; /* dark background */
+  overflow: hidden;
+  position: relative;
 }
 
+
+@keyframes gradientAnimation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ===============================
+   ✨ Floating Particles
+=============================== */
+@keyframes floatUpAndDisappear {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-1200px) scale(0.5);
+    opacity: 0;
+  }
+}
+
+
+.particle {
+  position: absolute;
+  bottom: 0; /* start from bottom */
+  background: rgba(255,255,255,0.15);
+  border-radius: 50%;
+  animation: floatUpAndDisappear linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+
+@keyframes floatParticles {
+  0% { transform: translateY(0) translateX(0) scale(1); opacity: 1; }
+  100% { transform: translateY(-1200px) translateX(200px) scale(0.5); opacity: 0; }
+}
+
+/* ===============================
+   ✨ Container
+=============================== */
 .container {
-  background-color: #fff;
-  padding: 40px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: 40px 30px;
   border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
   text-align: center;
   max-width: 600px;
-  width: 90%;
-  transition: transform 0.3s ease;
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  animation: floatContainer 6s ease-in-out infinite;
+  position: relative;
+  z-index: 1;
 }
 
-.container:hover {
-  transform: scale(1.03);
+@keyframes floatContainer {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-8px) scale(1.01); }
 }
 
 h1 {
-  font-size: 2.5rem;
-  margin-bottom: 30px;
-  color: #333;
+  font-size: 2.4rem;
+  margin-bottom: 25px;
+  color: #ffffff;
+  text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  animation: textGlow 3s ease-in-out infinite alternate;
 }
 
+@keyframes textGlow {
+  0% { text-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+  50% { text-shadow: 0 4px 20px rgba(106,17,203,0.8), 0 0 20px rgba(37,117,252,0.6); }
+  100% { text-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+}
+
+/* ===============================
+   File Input
+=============================== */
 input[type="file"] {
   display: block;
   margin: 20px auto;
-  padding: 10px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px dashed rgba(255, 255, 255, 0.5);
+  border-radius: 14px;
   cursor: pointer;
-}
-
-img.preview {
-  width: 100px;
-  height: 100px;
-  object-fit: cover;
-  margin: 10px;
-  border-radius: 10px;
-  border: 1px solid #ddd;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-
-.images-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin-top: 20px;
-}
-
-button {
-  margin-top: 20px;
-  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  width: 100%;
+  max-width: 420px;
   color: #fff;
+  transition: all 0.3s ease;
+}
+
+input[type="file"]:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: #fff;
+  animation: pulseBorder 1.5s infinite;
+}
+
+@keyframes pulseBorder {
+  0% { border-color: rgba(255,255,255,0.5); }
+  50% { border-color: #6a11cb; }
+  100% { border-color: rgba(255,255,255,0.5); }
+}
+
+input[type="file"]::-webkit-file-upload-button {
+  background: #ffffff;
+  color: #2575fc;
   border: none;
-  padding: 15px 30px;
-  font-size: 1rem;
-  font-weight: bold;
-  border-radius: 15px;
+  padding: 10px 18px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: opacity 0.3s ease;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  margin-right: 10px;
 }
 
-button:hover {
-  opacity: 0.9;
+input[type="file"]::-webkit-file-upload-button:hover {
+  background: #e6e6e6;
+  transform: scale(1.05);
 }
 
-.main, .convertToPdfButton {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
+/* ===============================
+   PDF Name Input
+=============================== */
+.fileNameInput input {
+  display: block;
+  margin: 15px auto 30px;
+  padding: 14px 16px;
+  width: 100%;
+  max-width: 420px;
+  border: 2px solid rgba(255,255,255,0.5);
+  border-radius: 14px;
+  font-size: 16px;
+  outline: none;
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  transition: all 0.3s ease;
 }
 
+.fileNameInput input:focus {
+  border-color: #fff;
+  box-shadow: 0 0 12px rgba(255,255,255,0.6);
+  background: rgba(255,255,255,0.15);
+  animation: glowInput 1.5s ease-in-out infinite alternate;
+}
 
+@keyframes glowInput {
+  0% { box-shadow: 0 0 12px rgba(255,255,255,0.6); }
+  50% { box-shadow: 0 0 20px rgba(106,17,203,0.8); }
+  100% { box-shadow: 0 0 12px rgba(255,255,255,0.6); }
+}
 
-
-
-
+/* ===============================
+   Preview Images
+=============================== */
 .previews {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 15px;
+  margin-bottom: 25px;
 }
 
 .preview-image {
-  width: 120px;       /* Fixed width */
-  height: auto;       /* Maintain aspect ratio */
-  object-fit: cover;  /* Crop if necessary */
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-  transition: transform 0.2s;
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .preview-image:hover {
-  transform: scale(1.1);  /* Slight zoom on hover */
+  transform: scale(1.08) rotate(-2deg);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.35);
 }
 
-@media (max-width: 500px) {
-  .preview-image {
-    width: 80px;
-  }
-}
-.allSelectedImagesContainer img {
-    cursor: pointer;
-}
-.imageToPdfConvertHeading {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-}
-/* Dragging indicator */
 .preview-image.dragging {
-  opacity: 0.5;
-  border: 2px dashed #6a11cb;
+  opacity: 0.6;
+  border: 2px dashed #fff;
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
 }
 
-/* Loading state button */
+/* ===============================
+   Convert Button
+=============================== */
+.convertToPdfButtonMain {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.convertToPdfButton button {
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  color: #fff;
+  border: none;
+  padding: 14px 28px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.convertToPdfButton button:hover {
+  transform: scale(1.05) rotate(-1deg);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+  animation: pulseButton 1.2s infinite alternate;
+}
+
+@keyframes pulseButton {
+  0% { transform: scale(1.05) rotate(-1deg); }
+  50% { transform: scale(1.1) rotate(1deg); }
+  100% { transform: scale(1.05) rotate(-1deg); }
+}
+
 .convertToPdfButton button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
-/* Highlight image being dragged */
-.preview-image.dragging {
-  opacity: 0.5;
-  border: 2px dashed #2575fc;
-  transform: scale(1.05);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-}
 
+/* ===============================
+   Responsive Design
+=============================== */
+@media (max-width: 600px) {
+  h1 {
+    font-size: 1.9rem;
+  }
+
+  input[type="file"],
+  .fileNameInput input {
+    max-width: 100%;
+    font-size: 14px;
+  }
+
+  .preview-image {
+    width: 90px;
+    height: 90px;
+  }
+
+  .convertToPdfButton button {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .container {
+    padding: 25px 15px;
+  }
+}
 .previews {
   display: flex;
-  flex-wrap: wrap;         /* allow images to go to next row */
-  justify-content: center; /* center images horizontally */
-  gap: 10px;               /* spacing between images */
-  margin-bottom: 20px;
-  width: 100%;             /* make container fit screen width */
-  box-sizing: border-box;  /* include padding in width calculation */
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 25px;
+  max-height: 260px; /* Change as needed */
+  overflow-y: auto;
 }
-
-.preview-image {
-  width: 120px;       /* fixed width */
-  height: 120px;      /* fixed height */
-  object-fit: cover;  /* crop nicely */
-  border-radius: 10px;
+.container {
+  position: relative;
+}
+.convertToPdfButtonMain {
+  position: sticky;
+  bottom: 18px;
+  background: transparent;
+  z-index: 2;
+}
+/* Ensure the wrapper is positioned relative for the button */
+.preview-wrapper {
+  position: relative;
+  display: inline-block;
+  margin: 10px;
   border: 1px solid #ccc;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-  transition: transform 0.2s;
+  border-radius: 5px;
+  overflow: hidden; /* Keep button inside */
 }
 
-.preview-image:hover {
-  transform: scale(1.05);
+/* Style for the delete button */
+.delete-image {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: rgba(255, 0, 0, 0.7);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 14px;
+  line-height: 20px;
+  text-align: center;
+  cursor: pointer;
+  z-index: 10; /* Ensure it's above the image */
+  transition: background 0.2s;
+}
+
+.delete-image:hover {
+  background: red;
+}
+
+/* Ensure the image container works with the delete button */
+.previews {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.delete-image {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    
+    /* Appearance */
+    background: rgba(220, 53, 69, 0.9); /* Danger Red */
+    color: white;
+    border: none;
+    border-radius: 50%;
+    
+    /* Sizing and Centering */
+    width: 25px;
+    height: 25px;
+    font-size: 16px; 
+    line-height: 25px; /* Centers the 'X' vertically */
+    text-align: center;
+    padding: 0;
+
+    cursor: pointer;
+    z-index: 10;
+    opacity: 0; /* Hidden by default */
+    transform: scale(0.8);
+    transition: opacity 0.2s, transform 0.2s, background-color 0.2s;
+}
+
+/* Make button visible on hover */
+.preview-wrapper:hover .delete-image {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.delete-image:hover {
+    background: #dc3545; /* Solid Red on hover */
 }

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { jsPDF } from "jspdf";
 import "./App.css";
 
@@ -6,18 +6,36 @@ export default function App() {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [draggedIndex, setDraggedIndex] = useState(null);
+  const [pdfName, setPdfName] = useState("images");
+  const [particles, setParticles] = useState([]);
 
-  // Handle file selection
+  useEffect(() => {
+    // Generate 50 particles
+    const temp = [];
+    for (let i = 0; i < 50; i++) {
+      temp.push({
+        size: Math.random() * 6 + 2, // 2px to 8px
+        left: Math.random() * 100, // %
+        duration: Math.random() * 20 + 10, // 10s to 30s
+        delay: Math.random() * 10 // stagger
+      });
+    }
+    setParticles(temp);
+  }, []);
+
   const handleFileChange = (e) => {
     setImages(Array.from(e.target.files));
   };
 
-  // Handle drag start
+  const handleDelete = (idxToDelete) => {
+    // Filter the images array to remove the file at the specified index
+    setImages(currentImages => currentImages.filter((_, idx) => idx !== idxToDelete));
+  };
+
   const handleDragStart = (index) => {
     setDraggedIndex(index);
   };
 
-  // Handle drag over for reordering
   const handleDragOver = (index, e) => {
     e.preventDefault();
     if (index === draggedIndex) return;
@@ -31,12 +49,10 @@ export default function App() {
     setImages(reordered);
   };
 
-  // Handle drag end → remove dragging class
   const handleDragEnd = () => {
     setDraggedIndex(null);
   };
 
-  // Convert to PDF
   const handleConvert = async () => {
     if (images.length === 0) {
       alert("Please select at least one image");
@@ -45,7 +61,8 @@ export default function App() {
 
     setLoading(true);
 
-    const pdf = new jsPDF();
+    // Initialize jsPDF with standard A4 settings
+    const pdf = new jsPDF({ unit: 'mm', format: 'a4' });
 
     for (let i = 0; i < images.length; i++) {
       const img = images[i];
@@ -60,37 +77,69 @@ export default function App() {
         const imgObj = new Image();
         imgObj.src = imgData;
         imgObj.onload = () => {
-          const pageWidth = pdf.internal.pageSize.getWidth() - 20;
-          const pageHeight = pdf.internal.pageSize.getHeight() - 20;
+          // Add 20mm padding (10mm on each side)
+          const pdfWidth = pdf.internal.pageSize.getWidth();
+          const pdfHeight = pdf.internal.pageSize.getHeight();
+          const padding = 10; 
+          const availableWidth = pdfWidth - (2 * padding);
+          const availableHeight = pdfHeight - (2 * padding);
 
           let imgWidth = imgObj.width;
           let imgHeight = imgObj.height;
 
-          const ratio = Math.min(pageWidth / imgWidth, pageHeight / imgHeight);
-          imgWidth *= ratio;
-          imgHeight *= ratio;
+          // Calculate scaling ratio
+          const ratio = Math.min(availableWidth / imgWidth, availableHeight / imgHeight);
+          
+          let finalImgWidth = imgWidth * ratio;
+          let finalImgHeight = imgHeight * ratio;
 
-          const x = (pdf.internal.pageSize.getWidth() - imgWidth) / 2;
-          const y = (pdf.internal.pageSize.getHeight() - imgHeight) / 2;
+          // Center the image
+          const x = (pdfWidth - finalImgWidth) / 2;
+          const y = (pdfHeight - finalImgHeight) / 2;
 
-          pdf.addImage(imgData, "JPEG", x, y, imgWidth, imgHeight);
+          // Check image type for addImage
+          const imageType = img.type.split('/')[1]?.toUpperCase() || 'JPEG';
 
+          // Add image to PDF
+          pdf.addImage(imgData, imageType, x, y, finalImgWidth, finalImgHeight);
+
+          // Add a new page for the next image, unless it's the last one
           if (i < images.length - 1) pdf.addPage();
           resolve();
         };
+        imgObj.onerror = () => {
+             // Resolve even on error to continue to the next image
+            console.error(`Failed to load image: ${img.name}`);
+            resolve(); 
+        }
       });
     }
 
-    pdf.save("images.pdf");
+    // Save the PDF
+    pdf.save(pdfName.replace(/[^a-z0-9]/gi, '_') + ".pdf");
     setLoading(false);
   };
 
   return (
     <div className="main">
-      <div className="p-6 text-center">
-        <h1 className="imageToPdfConvertHeading">Image to PDF Converter</h1>
+      {/* Floating particles */}
+      {particles.map((p, idx) => (
+        <div
+          key={idx}
+          className="particle"
+          style={{
+            width: `${p.size}px`,
+            height: `${p.size}px`,
+            left: `${p.left}%`,
+            animationDuration: `${p.duration}s`,
+            animationDelay: `${p.delay}s`,
+          }}
+        />
+      ))}
 
-        {/* File Input */}
+      <div className="container">
+        <h1>Image to PDF Converter</h1>
+
         <input
           type="file"
           accept="image/*"
@@ -98,29 +147,50 @@ export default function App() {
           onChange={handleFileChange}
         />
 
-        {/* Image Previews */}
+        <div className="fileNameInput">
+          <input
+            type="text"
+            placeholder="Enter PDF name"
+            value={pdfName}
+            onChange={(e) => setPdfName(e.target.value)}
+          />
+        </div>
+
         {images.length > 0 && (
-          <div className="previews allSelectedImagesContainer">
+          <div className="previews">
             {images.map((img, idx) => (
-              <img
-                key={idx}
-                src={URL.createObjectURL(img)}
-                alt={`preview-${idx}`}
-                className={`preview-image ${draggedIndex === idx ? "dragging" : ""}`}
+              <div 
+                key={idx} 
+                className={`preview-wrapper ${draggedIndex === idx ? "dragging-container" : ""}`}
                 draggable
                 onDragStart={() => handleDragStart(idx)}
                 onDragOver={(e) => handleDragOver(idx, e)}
-                onDragEnd={handleDragEnd}  // ← FIX: remove dragging class after drop
-              />
+                onDragEnd={handleDragEnd}
+              >
+                <img
+                  src={URL.createObjectURL(img)}
+                  alt={`preview-${idx}`}
+                  className={`preview-image ${draggedIndex === idx ? "dragging" : ""}`}
+                />
+                
+                {/* NEW: Delete Button */}
+                <button 
+                    className="delete-image" 
+                    onClick={() => handleDelete(idx)}
+                >
+                   &#8635; {/* Unicode for a close/delete cross */}
+                </button>
+              </div>
             ))}
           </div>
         )}
 
-        {/* Convert Button */}
-        <div className="convertToPdfButton">
-          <button onClick={handleConvert} disabled={loading}>
-            {loading ? "Generating PDF..." : "Convert to PDF"}
-          </button>
+        <div className="convertToPdfButtonMain">
+          <div className="convertToPdfButton">
+            <button onClick={handleConvert} disabled={loading || images.length === 0}>
+              {loading ? "Generating PDF..." : "Convert to PDF"}
+            </button>
+          </div>
         </div>
       </div>
     </div>
