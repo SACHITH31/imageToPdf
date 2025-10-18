@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { jsPDF } from "jspdf";
-import "./App.css";
+import "./app.css";
 
 export default function App() {
   const [images, setImages] = useState([]);
